@@ -1,338 +1,59 @@
-# REST API Authentication dengan JWT
 
-## Base URL
-```
-http://127.0.0.1:8000/api
-```
+# REST API Test - ARIGHO_TEST_NAGA
 
-## Endpoints
+## 1. Apa itu REST API?
 
-### 1. Register User
-**POST** `/auth/register`
+**REST (Representational State Transfer)** adalah sebuah arsitektur untuk membangun layanan web yang memungkinkan komunikasi antar sistem menggunakan protokol HTTP. REST API adalah aplikasi yang menerapkan prinsip-prinsip REST untuk melakukan pertukaran data antara server dan client, di mana data umumnya dikirim dalam format JSON atau XML.
 
-**Request Body:**
-```json
-{
-    "name": "SUper Admin",
-    "email": "super@admin.local",
-    "password": "rahasia123",
-    "password_confirmation": "rahasia123"
-}
-```
+Beberapa prinsip dasar dari REST API adalah:
+- **Stateless**: Setiap permintaan dari client ke server harus berisi semua informasi yang diperlukan untuk memahami permintaan tersebut.
+- **Client-Server**: Model komunikasi antara client (pengguna) dan server (penyedia layanan).
+- **Cacheable**: Data yang dikirim dari server dapat di-cache untuk meningkatkan performa.
+- **Uniform Interface**: Menggunakan standar HTTP seperti GET, POST, PUT, DELETE, dan PATCH untuk berinteraksi dengan sumber daya.
 
-**Response (Success):**
-```json
-{
-    "success": true,
-    "message": "User registered successfully",
-    "data": {
-        "user": {
-            "id": 1,
-            "name": "SUper Admin",
-            "email": "super@admin.local",
-            "email_verified_at": null,
-            "created_at": "2025-10-16T00:00:00.000000Z",
-            "updated_at": "2025-10-16T00:00:00.000000Z"
-        },
-        "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
-        "token_type": "bearer",
-        "expires_in": 3600
-    }
-}
-```
+## 2. Apa itu CORS dan bagaimana cara menanganinya di backend?
 
-### 2. Login User
-**POST** `/auth/login`
+**CORS (Cross-Origin Resource Sharing)** adalah mekanisme yang memungkinkan pembatasan atau kontrol akses antara domain yang berbeda dalam permintaan HTTP. Biasanya, ketika frontend mencoba mengakses API di server yang berada di domain lain, browser akan memblokirnya karena kebijakan **same-origin**.
 
-**Request Body:**
-```json
-{
-    "email": "super@admin.local",
-    "password": "rahasia123"
-}
-```
+Untuk menangani CORS di backend Laravel, dapat menggunakan middleware CORS yang sudah tersedia melalui package seperti `barryvdh/laravel-cors`. Berikut adalah langkah-langkah untuk mengonfigurasikan CORS di Laravel:
 
-**Response (Success):**
-```json
-{
-    "success": true,
-    "message": "Login successful",
-    "data": {
-        "user": {
-            "id": 1,
-            "name": "SUper Admin",
-            "email": "super@admin.local",
-            "email_verified_at": null,
-            "created_at": "2025-10-16T00:00:00.000000Z",
-            "updated_at": "2025-10-16T00:00:00.000000Z"
-        },
-        "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
-        "token_type": "bearer",
-        "expires_in": 3600
-    }
-}
-```
+1. Install package CORS:
+   ```bash
+   composer require barryvdh/laravel-cors
+   ```
 
-### 3. Get User Profile (Protected)
-**GET** `/auth/profile`
+2. Tambahkan middleware CORS di `app/Http/Kernel.php`:
+   ```php
+   'cors' => \Barryvdh\Cors\HandleCors::class,
+   ```
 
-**Headers:**
-```
-Authorization: Bearer {token}
-```
+3. Konfigurasi file `config/cors.php` sesuai dengan kebutuhan, misalnya mengizinkan akses dari domain frontend tertentu:
+   ```php
+   'allowed_origins' => ['https://yourfrontenddomain.com'],
+   ```
 
-**Response (Success):**
-```json
-{
-    "success": true,
-    "data": {
-        "id": 1,
-        "name": "SUper Admin",
-        "email": "super@admin.local",
-        "email_verified_at": null,
-        "created_at": "2025-10-16T00:00:00.000000Z",
-        "updated_at": "2025-10-16T00:00:00.000000Z"
-    }
-}
-```
+## 3. Jelaskan perbedaan antara SQL dan NoSQL database
 
-### 4. Logout (Protected)
-**POST** `/auth/logout`
+**SQL Database (Relational Database)**:
+- Menggunakan skema yang tetap (structured schema) untuk data yang disimpan.
+- Menggunakan tabel dengan kolom dan baris untuk menyimpan data.
+- Memiliki bahasa query standar yaitu **SQL** (Structured Query Language).
+- Contoh: MySQL, PostgreSQL, Oracle.
 
-**Headers:**
-```
-Authorization: Bearer {token}
-```
+**NoSQL Database (Non-relational Database)**:
+- Tidak menggunakan skema tetap; data disimpan dalam berbagai format seperti dokumen, key-value pairs, graph, atau columnar.
+- Lebih fleksibel untuk menangani data yang tidak terstruktur atau semi-terstruktur.
+- Cocok untuk skala besar dan aplikasi dengan kebutuhan data yang dinamis.
+- Contoh: MongoDB, Cassandra, Redis.
 
-**Response (Success):**
-```json
-{
-    "success": true,
-    "message": "Successfully logged out"
-}
-```
+## 4. Apa yang anda ketahui tentang middleware?
 
-### 5. Refresh Token (Protected)
-**POST** `/auth/refresh`
+**Middleware** adalah lapisan perangkat lunak yang berada di antara aplikasi dan server atau database yang bertugas untuk menangani request dan response. Middleware memungkinkan kita untuk melakukan berbagai operasi sebelum dan sesudah request diproses oleh aplikasi.
 
-**Headers:**
-```
-Authorization: Bearer {token}
-```
+Beberapa kegunaan middleware adalah:
+- **Autentikasi dan otorisasi**: Memastikan bahwa pengguna yang mengakses API telah login dan memiliki hak akses yang tepat.
+- **Validasi data**: Memeriksa apakah data yang diterima sesuai dengan format yang diharapkan.
+- **CORS**: Mengizinkan atau membatasi akses dari domain tertentu.
+- **Logging**: Mencatat aktivitas request dan response.
 
-**Response (Success):**
-```json
-{
-    "success": true,
-    "data": {
-        "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
-        "token_type": "bearer",
-        "expires_in": 3600
-    }
-}
-```
-
-## Todo API Endpoints
-
-### 6. Get All Todos (Protected)
-**GET** `/todos`
-
-**Headers:**
-```
-Authorization: Bearer {token}
-```
-
-**Response (Success):**
-```json
-{
-    "success": true,
-    "data": {
-        "id": 1,
-        "title": "Buat REST API",
-        "description": "Untuk Test PT Cipta Koin Digital",
-        "is_done": false,
-        "user_id": 1,
-        "created_at": "2025-10-15T19:45:00.000000Z",
-        "updated_at": "2025-10-15T19:45:00.000000Z"
-    }
-}
-```
-
-### 7. Create Todo (Protected)
-**POST** `/todos`
-
-**Headers:**
-```
-Authorization: Bearer {token}
-```
-
-**Request Body:**
-```json
-{
-    "title": "Buat REST API",
-    "description": "Untuk Test PT Cipta Koin Digital",
-    "is_done": false,
-}
-```
-
-**Response (Success):**
-```json
-{
-    "success": true,
-    "message": "Todo created successfully",
-    "data": {
-        "id": 1,
-        "title": "Buat REST API",
-        "description": "Untuk Test PT Cipta Koin Digital",
-        "is_done": false,
-        "user_id": 1,
-        "created_at": "2025-10-15T20:15:00.000000Z",
-        "updated_at": "2025-10-15T20:15:00.000000Z"
-    }
-}
-```
-
-**Response (Validation Error):**
-```json
-{
-    "message": "Judul todo harus diisi.",
-    "errors": {
-        "title": ["Judul todo harus diisi."]
-    }
-}
-```
-
-### 8. Get Single Todo (Protected)
-**GET** `/todos/{id}`
-
-**Headers:**
-```
-Authorization: Bearer {token}
-```
-
-**Response (Success):**
-```json
-{
-    "success": true,
-    "data": {
-        "id": 1,
-        "title": "Buat REST API",
-        "description": "Untuk Test PT Cipta Koin Digital",
-        "is_done": false,
-        "user_id": 1,
-        "created_at": "2025-10-15T19:45:00.000000Z",
-        "updated_at": "2025-10-15T19:45:00.000000Z"
-    }
-}
-```
-
-**Response (Not Found):**
-```json
-{
-    "success": false,
-    "message": "Todo not found"
-}
-```
-
-### 9. Update Todo (Protected)
-**PUT** `/todos/{id}`
-
-**Headers:**
-```
-Authorization: Bearer {token}
-```
-
-**Request Body:**
-```json
-{
-    "title": "Buat REST API",
-    "description": "Untuk Test PT Cipta Koin Digital",
-    "is_done": true,
-}
-```
-
-**Response (Success):**
-```json
-{
-    "success": true,
-    "message": "Todo updated successfully",
-    "data": {
-        "id": 1,
-        "title": "Buat REST API",
-        "description": "Untuk Test PT Cipta Koin Digital",
-        "is_done": true,
-        "user_id": 1,
-        "created_at": "2025-10-15T19:45:00.000000Z",
-        "updated_at": "2025-10-15T20:20:00.000000Z"
-    }
-}
-```
-
-**Response (Validation Error):**
-```json
-{
-    "message": "Judul todo harus diisi.",
-    "errors": {
-        "title": ["Judul todo harus diisi."]
-    }
-}
-```
-
-**Response (Not Found):**
-```json
-{
-    "success": false,
-    "message": "Todo not found"
-}
-```
-
-### 10. Delete Todo (Protected)
-**DELETE** `/todos/{id}`
-
-**Headers:**
-```
-Authorization: Bearer {token}
-```
-
-**Response (Success):**
-```json
-{
-    "success": true,
-    "message": "Todo deleted successfully"
-}
-```
-
-**Response (Not Found):**
-```json
-{
-    "success": false,
-    "message": "Todo not found"
-}
-```
-
-## Error Responses
-
-### Unauthenticated
-```json
-{
-    "message": "Unauthenticated."
-}
-```
-
-### Unauthorized (Accessing other user's todo)
-```json
-{
-    "success": false,
-    "message": "Unauthorized"
-}
-```
-
-### Validation Error
-```json
-{
-    "message": "The given data was invalid.",
-    "errors": {
-        "field_name": ["Error message"]
-    }
-}
-```
+Middleware sering digunakan dalam berbagai framework seperti **Express.js**, **Flask**, dan **Laravel**.
